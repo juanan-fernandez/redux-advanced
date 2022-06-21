@@ -9,6 +9,15 @@ const Cart = props => {
 	const showCart = useSelector(state => state.cartButton.showCart);
 	const totalCart = useSelector(state => state.cart.totalCart);
 
+	if (showCart && !cartItems.length) {
+		return (
+			<Card className={classes.cart}>
+				<h2>Your Shopping Cart is Empty!</h2>
+				<p>Let's start adding products</p>
+			</Card>
+		);
+	}
+
 	return (
 		<>
 			{showCart && cartItems.length && (
@@ -17,8 +26,9 @@ const Cart = props => {
 					<ul>
 						{cartItems.map(item => (
 							<CartItem
-								key={item.product}
+								key={item.id}
 								item={{
+									id: item.id,
 									title: item.product,
 									quantity: item.qty,
 									total: +item.totalItem,

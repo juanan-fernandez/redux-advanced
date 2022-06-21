@@ -7,6 +7,7 @@ const initialCartState = {
 
 //cada posición del array de productos
 // {
+//		id:0,
 //    product: '',
 //    qty: 0,
 //    price: 0,
@@ -24,11 +25,9 @@ const cartSlice = createSlice({
 	initialState: initialCartState,
 	reducers: {
 		addProduct: (state, action) => {
-			const { productId, productPrice } = action.payload;
+			const { productId, productTitle, productPrice } = action.payload;
 
-			const productIdIndex = state.products.findIndex(
-				item => item.product === productId
-			);
+			const productIdIndex = state.products.findIndex(item => item.id === productId);
 			if (productIdIndex >= 0) {
 				const quantity = state.products[productIdIndex].qty + 1;
 				const total = (quantity * productPrice).toFixed(2);
@@ -39,7 +38,8 @@ const cartSlice = createSlice({
 				};
 			} else {
 				const newProduct = {
-					product: productId,
+					id: productId,
+					product: productTitle,
 					qty: 1,
 					price: productPrice,
 					totalItem: productPrice,
@@ -53,27 +53,20 @@ const cartSlice = createSlice({
 		},
 
 		removeProduct: (state, action) => {
-			const { productId, productPrice } = action.payload;
+			const { productId } = action.payload;
 
-			const productIdIndex = state.products.findIndex(
-				item => item.product === productId
-			);
-
-			if (productIdIndex >= 0) {
-				const quantity = state.products[productIdIndex].qty - 1;
-				if (quantity <= 0) {
-					state.products = state.products.filter(item => item.product !== productId);
-				} else {
-					const total = (quantity * productPrice).toFixed(2);
-					state.products[productIdIndex] = {
-						...state.products[productIdIndex],
-						qty: quantity,
-						totalItem: total,
-					};
-				}
-				const totalAmountCart = getTotalCart(state.products);
-				state.totalCart = totalAmountCart.toFixed(2);
+			const existingCartItem = state.products.find(item => item.id === productId);
+			if (existingCartItem.qty === 1) {
+				state.products = state.products.filter(item => item.id !== productId);
+			} else {
+				existingCartItem.qty--;
+				existingCartItem.totalItem = (
+					existingCartItem.totalItem - existingCartItem.price
+				).toFixed(2);
 			}
+
+			const totalAmountCart = getTotalCart(state.products);
+			state.totalCart = totalAmountCart.toFixed(2);
 		},
 	},
 });

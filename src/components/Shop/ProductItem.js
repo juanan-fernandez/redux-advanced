@@ -4,7 +4,7 @@ import Card from '../UI/Card';
 import classes from './ProductItem.module.css';
 
 const ProductItem = props => {
-	const { title, price, description } = props;
+	const { id, title, price, description } = props;
 
 	const dispatch = useDispatch();
 
@@ -22,7 +22,11 @@ const ProductItem = props => {
 				<div className={classes.actions}>
 					<button
 						onClick={() =>
-							addProductToCartHandler({ productId: title, productPrice: price })
+							addProductToCartHandler({
+								productId: id,
+								productTitle: title,
+								productPrice: price,
+							})
 						}
 					>
 						Add to Cart
