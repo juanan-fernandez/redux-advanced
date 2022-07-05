@@ -5,6 +5,7 @@ const initialUIState = {
 		status: '',
 		title: '',
 		message: '',
+		showme: false,
 	},
 };
 
@@ -13,15 +14,20 @@ const uiSlice = createSlice({
 	initialState: initialUIState,
 	reducers: {
 		showNotification: (state, actions) => {
-			const { status, title, message } = actions.payload;
+			const { status, title, message, showme } = actions.payload;
 			state.notification = {
 				status,
 				title,
 				message,
+				showme,
 			};
+		},
+
+		hideNotification: state => {
+			state.notification = { ...state.notification, showme: false };
 		},
 	},
 });
 
 export default uiSlice;
-export const { showNotification } = uiSlice.actions;
+export const { showNotification, hideNotification } = uiSlice.actions;

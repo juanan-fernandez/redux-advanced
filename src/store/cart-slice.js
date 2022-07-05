@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { showNotification } from './ui-slice';
+import { showNotification, hideNotification } from './ui-slice';
 
 const initialCartState = {
 	products: [],
 	totalCart: 0,
+	changed: false,
 };
 
 //cada posición del array de productos
@@ -58,6 +59,7 @@ const cartSlice = createSlice({
 
 			const totalAmountCart = getTotalCart(state.products);
 			state.totalCart = totalAmountCart.toFixed(2);
+			state.changed = true;
 		},
 
 		removeProduct: (state, action) => {
@@ -75,6 +77,7 @@ const cartSlice = createSlice({
 
 			const totalAmountCart = getTotalCart(state.products);
 			state.totalCart = totalAmountCart.toFixed(2);
+			state.changed = true;
 		},
 	},
 });
@@ -86,6 +89,7 @@ export const saveCart = cart => {
 				status: '',
 				title: 'Saving...',
 				message: 'Sending Cart data...',
+				showme: true,
 			})
 		);
 
@@ -94,13 +98,20 @@ export const saveCart = cart => {
 				'https://redux-cart-shopping-default-rtdb.firebaseio.com/cart.json',
 				{
 					method: 'PUT',
-					body: JSON.stringify(cart),
+					body: JSON.stringify({
+						products: cart.products,
+						totalCart: cart.totalCart,
+					}),
 				}
 			);
 
 			if (!response.ok) {
 				throw new Error('Error: saving cart to DataBase');
 			}
+		};
+
+		const hideMessage = () => {
+			setTimeout(() => dispatch(hideNotification()), 2000);
 		};
 
 		try {
@@ -110,14 +121,17 @@ export const saveCart = cart => {
 					status: 'success',
 					title: 'Saved',
 					message: 'Cart has been saved successfully',
+					showme: true,
 				})
 			);
+			hideMessage();
 		} catch (err) {
 			dispatch(
 				showNotification({
 					status: 'error',
 					title: 'Error saving Cart',
 					message: err.message,
+					showme: true,
 				})
 			);
 		}

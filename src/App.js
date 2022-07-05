@@ -15,7 +15,6 @@ function App() {
 	const notificationConfig = useSelector(state => state.ui.notification);
 	useEffect(() => {
 		dispatch(fetchCartData());
-		isInitialLoad = true;
 	}, [dispatch]);
 
 	useEffect(() => {
@@ -23,16 +22,18 @@ function App() {
 			isInitialLoad = false;
 			return;
 		}
-		dispatch(saveCart(cart));
+		if (cart.changed) dispatch(saveCart(cart));
 	}, [cart, dispatch]);
 
 	return (
 		<>
-			<Notification
-				status={notificationConfig.status}
-				title={notificationConfig.title}
-				message={notificationConfig.message}
-			/>
+			{notificationConfig.showme && (
+				<Notification
+					status={notificationConfig.status}
+					title={notificationConfig.title}
+					message={notificationConfig.message}
+				/>
+			)}
 			<Layout>
 				<Cart />
 				<Products />
